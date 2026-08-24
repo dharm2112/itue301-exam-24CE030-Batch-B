@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const API_URL = 'http://localhost:5000';
@@ -9,7 +9,7 @@ const HomePage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, token } = useContext(AuthContext);
+  const { login, token, customer } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,9 +20,7 @@ const HomePage = () => {
     try {
       const response = await fetch(`${API_URL}/api/v1/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
 
@@ -35,41 +33,93 @@ const HomePage = () => {
         setError(data.message || 'Invalid email or login failed.');
       }
     } catch (err) {
-      setError('Unable to connect to server.');
+      setError('Unable to connect to server. Is the backend running?');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '2rem auto', padding: '1rem', border: '1px solid #ccc', borderRadius: '5px' }}>
-      <h1>QuickBite Home</h1>
-      <h2>Customer Login</h2>
+    <>
+      {/* Hero Section */}
+      <section className="hero">
+        <div className="hero-content">
+          <span className="hero-tag">🚀 Food Ordering System</span>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+          <h1>
+            Delicious Food,<br />
+            <span>Delivered Fast.</span>
+          </h1>
 
-      {token ? (
-        <p>You are logged in! Click "Order" in navigation to view orders.</p>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Email Address:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter customer email"
-              required
-              style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box' }}
-            />
+          <p>
+            Browse restaurants, place your order in seconds,<br />
+            and track it all in one place.
+          </p>
+
+          <div className="hero-actions">
+            <Link to="/restaurants" className="btn btn-primary">
+              🍽️ Explore Restaurants
+            </Link>
+            <a href="#login" className="btn btn-secondary">
+              Sign In →
+            </a>
           </div>
 
-          <button type="submit" disabled={loading} style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}>
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-      )}
-    </div>
+          {/* Login / Logged-in Card */}
+          <div id="login">
+            {token ? (
+              <div className="logged-in-card">
+                <div className="logged-in-avatar">
+                  {customer?.name?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                <h2>Welcome back!</h2>
+                <p>{customer?.name} — ready to order?</p>
+                <Link to="/order" className="btn btn-primary btn-full">
+                  🛒 Place an Order
+                </Link>
+              </div>
+            ) : (
+              <div className="hero-login-card">
+                <h2>🔐 Customer Login</h2>
+
+                {error && (
+                  <div className="alert alert-error">⚠️ {error}</div>
+                )}
+
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label className="form-label form-label-light" htmlFor="email">
+                      Email Address
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      className="form-control form-control-dark"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="e.g. alex@example.com"
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-full"
+                    disabled={loading}
+                  >
+                    {loading ? '⏳ Logging in...' : '→ Login'}
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        © 2025 QuickBite Food Ordering System · Built with React + Express + MongoDB
+      </footer>
+    </>
   );
 };
 

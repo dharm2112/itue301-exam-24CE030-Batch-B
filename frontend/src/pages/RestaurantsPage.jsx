@@ -21,7 +21,7 @@ const RestaurantsPage = () => {
           setError('Failed to load restaurants.');
         }
       } catch (err) {
-        setError('Failed to load restaurants.');
+        setError('Unable to load restaurants. Please check your connection.');
       } finally {
         setLoading(false);
       }
@@ -30,45 +30,73 @@ const RestaurantsPage = () => {
     fetchRestaurants();
   }, []);
 
+  // Client-side filter — no extra API call
   const filteredRestaurants = restaurants.filter((restaurant) => {
     const term = searchTerm.toLowerCase();
-    const matchesName = restaurant.name.toLowerCase().includes(term);
-    const matchesCuisine = restaurant.cuisine.toLowerCase().includes(term);
-    return matchesName || matchesCuisine;
+    return (
+      restaurant.name.toLowerCase().includes(term) ||
+      restaurant.cuisine.toLowerCase().includes(term)
+    );
   });
 
   return (
-    <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '1rem' }}>
-      <h1>Restaurants</h1>
+    <main className="container">
+      {/* Page Header */}
+      <div className="page-header">
+        <h1>Explore Restaurants</h1>
+        <p>Discover the best food from restaurants near you</p>
+      </div>
 
-      <div style={{ marginBottom: '1.5rem' }}>
+      {/* Search Bar */}
+      <div className="search-bar-wrapper">
         <input
           type="text"
+          className="search-bar"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search restaurants..."
-          style={{ width: '100%', padding: '0.5rem', fontSize: '1rem', boxSizing: 'border-box' }}
+          placeholder="Search by name or cuisine..."
         />
       </div>
 
-      {loading && <p>Loading restaurants...</p>}
-
-      {error && !loading && <p style={{ color: 'red' }}>{error}</p>}
-
-      {!loading && !error && filteredRestaurants.length === 0 && (
-        <p>No restaurants found.</p>
+      {/* Loading State */}
+      {loading && (
+        <div className="spinner-wrapper">
+          <div className="spinner"></div>
+          <span>Loading restaurants...</span>
+        </div>
       )}
 
-      {!loading && !error && filteredRestaurants.map((restaurant) => (
-        <RestaurantCard
-          key={restaurant._id}
-          name={restaurant.name}
-          cuisine={restaurant.cuisine}
-          rating={restaurant.rating}
-          isOpen={restaurant.isOpen}
-        />
-      ))}
-    </div>
+      {/* Error State */}
+      {error && !loading && (
+        <div className="alert alert-error">
+          ⚠️ {error}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && filteredRestaurants.length === 0 && (
+        <div className="empty-state">
+          <div className="empty-icon">🍽️</div>
+          <h3>No restaurants found</h3>
+          <p>Try a different name or cuisine type.</p>
+        </div>
+      )}
+
+      {/* Restaurant Cards Grid */}
+      {!loading && !error && filteredRestaurants.length > 0 && (
+        <div className="restaurants-grid">
+          {filteredRestaurants.map((restaurant) => (
+            <RestaurantCard
+              key={restaurant._id}
+              name={restaurant.name}
+              cuisine={restaurant.cuisine}
+              rating={restaurant.rating}
+              isOpen={restaurant.isOpen}
+            />
+          ))}
+        </div>
+      )}
+    </main>
   );
 };
 

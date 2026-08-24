@@ -29,7 +29,12 @@ function App() {
           <Route
             path="/admin"
             element={
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={
+                <div className="spinner-wrapper">
+                  <div className="spinner"></div>
+                  <span>Loading Admin Panel...</span>
+                </div>
+              }>
                 <AdminPanel />
               </Suspense>
             }

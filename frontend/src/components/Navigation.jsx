@@ -12,23 +12,27 @@ const Navigation = () => {
   };
 
   return (
-    <nav style={{ padding: '1rem', borderBottom: '1px solid #ccc', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div>
-        <Link to="/" style={{ marginRight: '1rem' }}>Home</Link>
-        <Link to="/restaurants" style={{ marginRight: '1rem' }}>Restaurants</Link>
-        <Link to="/order" style={{ marginRight: '1rem' }}>Order</Link>
-        <Link to="/admin">Admin</Link>
-      </div>
+    <header className="navbar">
+      <Link to="/" className="nav-brand">
+        QuickBite
+      </Link>
+
+      <nav className="nav-links">
+        <Link to="/" className="nav-link">Home</Link>
+        <Link to="/restaurants" className="nav-link">Restaurants</Link>
+        <Link to="/order" className="nav-link">Order</Link>
+        <Link to="/admin" className="nav-link">Admin</Link>
+      </nav>
 
       {token && (
-        <div>
-          <span style={{ marginRight: '1rem' }}>Welcome, {customer?.name || 'Customer'}</span>
-          <button onClick={handleLogout} style={{ padding: '0.25rem 0.5rem', cursor: 'pointer' }}>
+        <div className="nav-user">
+          <span className="user-badge">👋 {customer?.name || 'Customer'}</span>
+          <button onClick={handleLogout} className="btn btn-outline btn-sm">
             Logout
           </button>
         </div>
       )}
-    </nav>
+    </header>
   );
 };
 
